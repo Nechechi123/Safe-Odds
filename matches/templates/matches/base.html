@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SAFE ODDS — Football match tips with odds and confidence ratings. Stake only what you can afford to lose. 18+.">
+    <title>{% block title %}SAFE ODDS{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'matches/css/style.css' %}">
+</head>
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-banner">
+            <h1>SAFE ODDS</h1>
+            <p class="tagline">Money can finish, but odds can't finish</p>
+        </div>
+        <div class="disclaimer-notice">
+            STAKE ONLY WHAT YOU CAN AFFORD TO LOSE — 18+
+        </div>
+    </header>
+
+    <!-- Ad placeholder -->
+    {% block ad_slot %}
+    <div class="ad-placeholder">
+        <span>Ad Space</span>
+    </div>
+    {% endblock %}
+
+    <!-- Main content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Bet Slip (sticky at bottom) -->
+    <div id="bet-slip" class="bet-slip">
+        <div class="slip-header">
+            <span id="slip-title">YOUR SLIP — 0 Games</span>
+            <a href="#" id="slip-clear" class="slip-clear">Clear</a>
+        </div>
+        <div id="slip-body" class="slip-body">
+            <p id="slip-empty" class="slip-empty">No games added yet.</p>
+            <ul id="slip-list" class="slip-list"></ul>
+        </div>
+        <div class="slip-footer">
+            <div class="slip-totals">
+                <span>Total Odds: <strong id="slip-odds">1.00</strong></span>
+                <span>Chance: <strong id="slip-chance">0%</strong></span>
+            </div>
+            <a id="slip-place-btn" href="{{ sportybet_url }}" target="_blank" rel="noopener" class="btn-place-slip">
+                Place Slip on SportyBet
+            </a>
+        </div>
+    </div>
+
+    <!-- Responsible gambling footer -->
+    <footer class="site-footer">
+        <p>⚠️ Betting carries risk. Tips reflect the editor's opinion, not a guarantee.</p>
+        <p><a href="https://www.responsiblegambling.org" target="_blank" rel="noopener">Responsible Gambling Help</a></p>
+    </footer>
+
+    <script src="{% static 'matches/js/slip.js' %}"></script>
+</body>
+</html>

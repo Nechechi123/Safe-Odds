@@ -1,0 +1,49 @@
+{% extends "matches/base.html" %}
+{% load match_extras %}
+
+{% block title %}SAFE ODDS — Today's Football Tips{% endblock %}
+
+{% block content %}
+<section class="matches-section">
+    {% if matches %}
+        {% for match in matches %}
+        <div class="match-card label-{{ match.label|lower }}" id="match-{{ match.id }}">
+            <div class="match-info">
+                <p class="match-meta">
+                    {{ match.league }} &bull;
+                    {{ match.kickoff|to_wat }} WAT /
+                    {{ match.kickoff|to_est }} EST
+                </p>
+                <h2 class="match-teams">{{ match.home_team }} vs {{ match.away_team }}</h2>
+                <p class="match-tip">Tip: {{ match.tip }} @ <strong>{{ match.odds }}</strong></p>
+                <div class="confidence-bar-wrapper">
+                    <div class="confidence-bar" style="width: {{ match.confidence }}%"></div>
+                </div>
+            </div>
+            <div class="match-actions">
+                <span class="confidence-badge badge-{{ match.label|lower }}">
+                    {{ match.label }} {{ match.confidence }}%
+                </span>
+                <button
+                    class="btn-add-slip"
+                    data-id="{{ match.id }}"
+                    data-match="{{ match.home_team }} vs {{ match.away_team }}"
+                    data-tip="{{ match.tip }}"
+                    data-odds="{{ match.odds }}"
+                    data-confidence="{{ match.confidence }}"
+                >
+                    + Add to Slip
+                </button>
+                <a href="{{ sportybet_url }}" target="_blank" rel="noopener" class="btn-sportybet">
+                    BET on SportyBet
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-matches">
+            <p>No tips available right now. Check back soon!</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

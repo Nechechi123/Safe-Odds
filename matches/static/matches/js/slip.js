@@ -1,5 +1,5 @@
-// SAFE ODDS - Bet Slip Logic
-// Plain JavaScript managing in-memory slip selections
+// SafeOdds - Interactive Bet Slip Logic
+// Plain JavaScript managing in-memory slip selections with smooth UI integration
 
 document.addEventListener('DOMContentLoaded', () => {
     // In-memory list of selected tips
@@ -7,54 +7,65 @@ document.addEventListener('DOMContentLoaded', () => {
     let slip = [];
 
     // DOM Elements
+    const slipPanel = document.getElementById('bet-slip');
     const slipTitle = document.getElementById('slip-title');
     const slipClear = document.getElementById('slip-clear');
+    const slipClose = document.getElementById('slip-close');
     const slipEmpty = document.getElementById('slip-empty');
     const slipList = document.getElementById('slip-list');
     const slipOdds = document.getElementById('slip-odds');
     const slipChance = document.getElementById('slip-chance');
+    const navSlipCount = document.getElementById('navSlipCount');
+    const toggleSlipBtn = document.getElementById('toggleSlipBtn');
     const addButtons = document.querySelectorAll('.btn-add-slip');
 
     // Update slip calculations and DOM
     function renderSlip() {
         const count = slip.length;
-        slipTitle.textContent = `YOUR SLIP — ${count} ${count === 1 ? 'Game' : 'Games'}`;
+        if (slipTitle) {
+            slipTitle.textContent = `YOUR SLIP — ${count} ${count === 1 ? 'Game' : 'Games'}`;
+        }
+        if (navSlipCount) {
+            navSlipCount.textContent = count;
+        }
 
         if (count === 0) {
-            slipEmpty.style.display = 'block';
-            slipList.innerHTML = '';
-            slipOdds.textContent = '1.00';
-            slipChance.textContent = '0%';
+            if (slipEmpty) slipEmpty.style.display = 'block';
+            if (slipList) slipList.innerHTML = '';
+            if (slipOdds) slipOdds.textContent = '1.00';
+            if (slipChance) slipChance.textContent = '0%';
         } else {
-            slipEmpty.style.display = 'none';
+            if (slipEmpty) slipEmpty.style.display = 'none';
 
             // Calculate total odds (product of all odds)
             let totalOdds = 1.0;
             // Calculate combined chance: product of (confidence / 100)
             let combinedChance = 1.0;
 
-            slipList.innerHTML = '';
-            slip.forEach(item => {
-                totalOdds *= parseFloat(item.odds);
-                combinedChance *= (parseFloat(item.confidence) / 100);
+            if (slipList) {
+                slipList.innerHTML = '';
+                slip.forEach(item => {
+                    totalOdds *= parseFloat(item.odds);
+                    combinedChance *= (parseFloat(item.confidence) / 100);
 
-                const li = document.createElement('li');
-                li.className = 'slip-item';
-                li.innerHTML = `
-                    <div class="slip-item-info">
-                        <span class="slip-item-match">${escapeHtml(item.match)}</span>
-                        <span class="slip-item-tip">${escapeHtml(item.tip)}</span>
-                    </div>
-                    <div style="display:flex; align-items:center;">
-                        <span class="slip-item-odds">@${item.odds}</span>
-                        <button class="slip-item-remove" data-id="${item.id}" title="Remove">&times;</button>
-                    </div>
-                `;
-                slipList.appendChild(li);
-            });
+                    const li = document.createElement('li');
+                    li.className = 'slip-item';
+                    li.innerHTML = `
+                        <div class="slip-item-info">
+                            <span class="slip-item-match">${escapeHtml(item.match)}</span>
+                            <span class="slip-item-tip">${escapeHtml(item.tip)}</span>
+                        </div>
+                        <div style="display:flex; align-items:center;">
+                            <span class="slip-item-odds">@${item.odds}</span>
+                            <button class="slip-item-remove" data-id="${item.id}" title="Remove item">&times;</button>
+                        </div>
+                    `;
+                    slipList.appendChild(li);
+                });
+            }
 
-            slipOdds.textContent = totalOdds.toFixed(2);
-            slipChance.textContent = `${(combinedChance * 100).toFixed(1)}%`;
+            if (slipOdds) slipOdds.textContent = totalOdds.toFixed(2);
+            if (slipChance) slipChance.textContent = `${(combinedChance * 100).toFixed(1)}%`;
         }
 
         // Update card button states
@@ -66,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.textContent = '✓ Added';
             } else {
                 btn.classList.remove('added');
-                btn.textContent = '+ Add to Slip';
+                btn.textContent = btn.classList.contains('btn-compact-add') ? '+ Slip' : '+ Add to Slip';
             }
         });
     }
@@ -78,6 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
             slip.splice(index, 1);
         } else {
             slip.push(matchData);
+            // Auto expand slip when adding a game
+            if (slipPanel) slipPanel.classList.remove('minimized');
         }
         renderSlip();
     }
@@ -97,13 +110,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Remove single item from slip list
-    slipList.addEventListener('click', (e) => {
-        if (e.target.classList.contains('slip-item-remove')) {
-            const idToRemove = e.target.getAttribute('data-id');
-            slip = slip.filter(item => item.id !== idToRemove);
-            renderSlip();
-        }
-    });
+    if (slipList) {
+        slipList.addEventListener('click', (e) => {
+            if (e.target.classList.contains('slip-item-remove')) {
+                const idToRemove = e.target.getAttribute('data-id');
+                slip = slip.filter(item => item.id !== idToRemove);
+                renderSlip();
+            }
+        });
+    }
 
     // Clear entire slip
     if (slipClear) {
@@ -114,7 +129,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Basic XSS protection
+    // Toggle slip visibility
+    if (slipClose && slipPanel) {
+        slipClose.addEventListener('click', (e) => {
+            e.stopPropagation();
+            slipPanel.classList.toggle('minimized');
+        });
+    }
+
+    if (toggleSlipBtn && slipPanel) {
+        toggleSlipBtn.addEventListener('click', () => {
+            slipPanel.classList.toggle('minimized');
+        });
+    }
+
+    // Basic XSS protection helper
     function escapeHtml(str) {
         const div = document.createElement('div');
         div.textContent = str;

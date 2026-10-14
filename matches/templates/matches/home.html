@@ -1,49 +1,255 @@
 {% extends "matches/base.html" %}
 {% load match_extras %}
 
-{% block title %}SAFE ODDS — Today's Football Tips{% endblock %}
+{% block title %}SafeOdds — Data-Driven Predictions You Can Trust{% endblock %}
 
 {% block content %}
-<section class="matches-section">
-    {% if matches %}
-        {% for match in matches %}
-        <div class="match-card label-{{ match.label|lower }}" id="match-{{ match.id }}">
-            <div class="match-info">
-                <p class="match-meta">
-                    {{ match.league }} &bull;
-                    {{ match.kickoff|to_wat }} WAT /
-                    {{ match.kickoff|to_est }} EST
-                </p>
-                <h2 class="match-teams">{{ match.home_team }} vs {{ match.away_team }}</h2>
-                <p class="match-tip">Tip: {{ match.tip }} @ <strong>{{ match.odds }}</strong></p>
-                <div class="confidence-bar-wrapper">
-                    <div class="confidence-bar" style="width: {{ match.confidence }}%"></div>
+<div class="dashboard-grid">
+
+    <!-- LEFT COLUMN: Main Predictions & Stats -->
+    <div class="main-column" id="free-tips">
+
+        <!-- Hero Header -->
+        <section class="hero-intro">
+            <div class="hero-badges-row">
+                <span class="pill-badge pill-green-dot">
+                    <span class="live-pulse-dot"></span>
+                    TODAY'S FREE PREDICTIONS
+                </span>
+                <span class="pill-badge pill-date">
+                    &bull; {{ today_date }}
+                </span>
+            </div>
+            <h1 class="hero-title">Data-Driven Predictions You Can Trust</h1>
+            <p class="hero-desc">Expert analyzed matches with AI-powered insights. Safe, reliable, and free daily tips.</p>
+        </section>
+
+        <!-- FEATURED MATCH CARD (Hero Spotlight) -->
+        {% if featured_match %}
+        <section class="featured-card" id="match-{{ featured_match.id }}">
+            <!-- Match Header Badge -->
+            <div class="featured-league-pill">
+                <span class="league-icon">🏆</span>
+                <span>{{ featured_match.league }}</span>
+                <span class="sep">&bull;</span>
+                <span>Today</span>
+                <span class="sep">&bull;</span>
+                <span>{{ featured_match.kickoff|to_gmt }}</span>
+            </div>
+
+            <!-- Teams Faceoff -->
+            <div class="faceoff-container">
+                <!-- Home Team -->
+                <div class="team-block home-team">
+                    <div class="crest-frame">
+                        {{ featured_match.home_team|team_badge }}
+                    </div>
+                    <h2 class="team-name">{{ featured_match.home_team }}</h2>
+                    <span class="team-sub">Home &bull; Main Stadium</span>
+                </div>
+
+                <!-- Center VS & Countdown -->
+                <div class="vs-center-block">
+                    <div class="vs-pill">VS</div>
+                    <span class="live-countdown">{{ featured_match.kickoff|countdown }}</span>
+                </div>
+
+                <!-- Away Team -->
+                <div class="team-block away-team">
+                    <div class="crest-frame">
+                        {{ featured_match.away_team|team_badge }}
+                    </div>
+                    <h2 class="team-name">{{ featured_match.away_team }}</h2>
+                    <span class="team-sub">Away &bull; Form: Active</span>
                 </div>
             </div>
-            <div class="match-actions">
-                <span class="confidence-badge badge-{{ match.label|lower }}">
-                    {{ match.label }} {{ match.confidence }}%
-                </span>
+
+            <!-- 3-Column Prediction Breakdown -->
+            <div class="prediction-stats-grid">
+                <div class="stat-col">
+                    <span class="col-caption">TIP</span>
+                    <strong class="col-primary-val">{{ featured_match.tip }}</strong>
+                    <span class="col-subtext">Confidence: {{ featured_match.confidence }}%</span>
+                </div>
+                <div class="stat-col stat-divider">
+                    <span class="col-caption">ODDS</span>
+                    <strong class="col-primary-val odds-highlight">{{ featured_match.odds }}</strong>
+                    <span class="col-subtext trend-up">+0.12 &uarr;</span>
+                </div>
+                <div class="stat-col">
+                    <span class="col-caption">PREDICTION</span>
+                    <div class="safe-badge-pill badge-{{ featured_match.label|lower }}">
+                        <span class="shield-mini">🛡️</span>
+                        <span>{{ featured_match.label }} Bet</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="featured-actions-row">
                 <button
                     class="btn-add-slip"
-                    data-id="{{ match.id }}"
-                    data-match="{{ match.home_team }} vs {{ match.away_team }}"
-                    data-tip="{{ match.tip }}"
-                    data-odds="{{ match.odds }}"
-                    data-confidence="{{ match.confidence }}"
+                    data-id="{{ featured_match.id }}"
+                    data-match="{{ featured_match.home_team }} vs {{ featured_match.away_team }}"
+                    data-tip="{{ featured_match.tip }}"
+                    data-odds="{{ featured_match.odds }}"
+                    data-confidence="{{ featured_match.confidence }}"
                 >
                     + Add to Slip
                 </button>
-                <a href="{{ sportybet_url }}" target="_blank" rel="noopener" class="btn-sportybet">
+                <a href="{{ sportybet_url }}" target="_blank" rel="noopener" class="btn-sportybet-direct">
                     BET on SportyBet
                 </a>
             </div>
+        </section>
+        {% endif %}
+
+        <!-- SECONDARY MATCH CARDS GRID -->
+        <section class="secondary-matches-grid">
+            {% if other_matches %}
+                {% for match in other_matches %}
+                <div class="compact-match-card" id="match-{{ match.id }}">
+                    <div class="compact-card-header">
+                        <div class="compact-crests-pair">
+                            {{ match.home_team|team_badge }}
+                            {{ match.away_team|team_badge }}
+                        </div>
+                        <div class="compact-match-info">
+                            <h3 class="compact-title">{{ match.home_team }} vs {{ match.away_team }}</h3>
+                            <span class="compact-meta">{{ match.league }} &bull; Today &bull; {{ match.kickoff|to_gmt }}</span>
+                        </div>
+                    </div>
+                    <div class="compact-card-footer">
+                        <div class="compact-tip-group">
+                            <span class="compact-tip-label">{{ match.tip }}</span>
+                            <span class="compact-confidence badge-mini-{{ match.label|lower }}">{{ match.confidence }}% {{ match.label }}</span>
+                        </div>
+                        <div class="compact-odds-actions">
+                            <span class="compact-odds-val">{{ match.odds }}</span>
+                            <button
+                                class="btn-add-slip btn-compact-add"
+                                data-id="{{ match.id }}"
+                                data-match="{{ match.home_team }} vs {{ match.away_team }}"
+                                data-tip="{{ match.tip }}"
+                                data-odds="{{ match.odds }}"
+                                data-confidence="{{ match.confidence }}"
+                            >
+                                + Slip
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% elif not featured_match %}
+                <div class="empty-matches-notice">
+                    <p>No matches published for today yet. Check back shortly!</p>
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- SOCIAL PROOF / STATS ROW -->
+        <section class="social-proof-strip">
+            <div class="proof-card">
+                <span class="proof-icon">🎯</span>
+                <div class="proof-details">
+                    <strong class="proof-number">85%</strong>
+                    <span class="proof-label">Win Rate</span>
+                    <small class="proof-sub">Last 30 Days</small>
+                </div>
+            </div>
+            <div class="proof-card">
+                <span class="proof-icon">📊</span>
+                <div class="proof-details">
+                    <strong class="proof-number">210+</strong>
+                    <span class="proof-label">Predictions</span>
+                    <small class="proof-sub">This Month</small>
+                </div>
+            </div>
+            <div class="proof-card">
+                <span class="proof-icon">👥</span>
+                <div class="proof-details">
+                    <strong class="proof-number">1.2K</strong>
+                    <span class="proof-label">Active Users</span>
+                    <small class="proof-sub">Using Free Tips</small>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- RIGHT COLUMN: VIP Showcase & Status -->
+    <aside class="sidebar-column" id="vip-section">
+
+        <!-- Live Matches Status Pill -->
+        <div class="live-status-card">
+            <span class="live-dot-pulse"></span>
+            <span class="live-status-text">Live &bull; {{ total_matches_count|default:"12" }} Matches Available</span>
         </div>
-        {% endfor %}
-    {% else %}
-        <div class="no-matches">
-            <p>No tips available right now. Check back soon!</p>
+
+        <!-- VIP MEMBERSHIP SHOWCASE CARD -->
+        <div class="vip-membership-card">
+            <div class="vip-card-header">
+                <div class="vip-badge-pill">
+                    <span class="crown-icon">👑</span>
+                    <span>VIP MEMBERSHIP</span>
+                </div>
+                <h2 class="vip-headline">VIP MEMBERSHIP</h2>
+                <p class="vip-subline">Unlock premium predictions & exclusive insights</p>
+            </div>
+
+            <!-- Price Display -->
+            <div class="vip-pricing">
+                <span class="currency-symbol">$</span>
+                <span class="price-amount">15</span>
+                <span class="price-cycle">/month</span>
+            </div>
+
+            <!-- Perks Checklist -->
+            <ul class="vip-features-list">
+                <li class="feature-item">
+                    <span class="check-circle">&#10003;</span>
+                    <span>Daily 3-5 Safe Odds</span>
+                </li>
+                <li class="feature-item">
+                    <span class="check-circle">&#10003;</span>
+                    <span>90% Accuracy</span>
+                </li>
+                <li class="feature-item">
+                    <span class="check-circle">&#10003;</span>
+                    <span>WhatsApp Support</span>
+                </li>
+                <li class="feature-item">
+                    <span class="check-circle">&#10003;</span>
+                    <span>Banker of the Day</span>
+                </li>
+                <li class="feature-item">
+                    <span class="check-circle">&#10003;</span>
+                    <span>Early Tips Access</span>
+                </li>
+                <li class="feature-item">
+                    <span class="check-circle">&#10003;</span>
+                    <span>Exclusive Analysis</span>
+                </li>
+            </ul>
+
+            <!-- Call to Action -->
+            <div class="vip-cta-block">
+                <a href="{{ sportybet_url }}" target="_blank" rel="noopener" class="btn-vip-join">
+                    <span class="lock-icon">🔒</span>
+                    <span>Join VIP Now — $15/month</span>
+                    <span class="arrow-icon">&rarr;</span>
+                </a>
+                <p class="vip-guarantee">Cancel anytime &bull; 3-day money-back guarantee</p>
+            </div>
+
+            <!-- Members Count Proof -->
+            <div class="vip-members-pill">
+                <span class="member-icon">👤</span>
+                <span>Join 1,500+ VIP Members</span>
+            </div>
         </div>
-    {% endif %}
-</section>
+
+    </aside>
+
+</div>
 {% endblock %}

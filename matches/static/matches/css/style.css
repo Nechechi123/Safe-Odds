@@ -412,6 +412,27 @@ body.safeodds-app {
     transform: scale(1.08);
 }
 
+.crest-img-wrapper {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.team-crest-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.7));
+    transition: transform 0.25s ease;
+}
+
+.team-crest-img:hover {
+    transform: scale(1.12);
+}
+
 .team-name {
     font-size: 1.25rem;
     font-weight: 700;
@@ -628,6 +649,15 @@ body.safeodds-app {
 
 .compact-crests-pair .team-crest-svg:last-child {
     margin-left: -10px;
+}
+
+.compact-crests-pair .crest-img-wrapper {
+    width: 34px;
+    height: 34px;
+}
+
+.compact-crests-pair .crest-img-wrapper:last-child {
+    margin-left: -12px;
 }
 
 .compact-match-info {

@@ -1,7 +1,7 @@
 {% extends "matches/base.html" %}
 {% load match_extras %}
 
-{% block title %}SafeOdds — Data-Driven Predictions You Can Trust{% endblock %}
+{% block title %}{{ site_settings.site_title }} — Data-Driven Predictions You Can Trust{% endblock %}
 
 {% block content %}
 <div class="dashboard-grid">
@@ -42,7 +42,7 @@
                 <!-- Home Team -->
                 <div class="team-block home-team">
                     <div class="crest-frame">
-                        {{ featured_match.home_team|team_badge }}
+                        {% club_crest featured_match.home_team featured_match.home_team_logo_url %}
                     </div>
                     <h2 class="team-name">{{ featured_match.home_team }}</h2>
                     <span class="team-sub">Home &bull; Main Stadium</span>
@@ -57,7 +57,7 @@
                 <!-- Away Team -->
                 <div class="team-block away-team">
                     <div class="crest-frame">
-                        {{ featured_match.away_team|team_badge }}
+                        {% club_crest featured_match.away_team featured_match.away_team_logo_url %}
                     </div>
                     <h2 class="team-name">{{ featured_match.away_team }}</h2>
                     <span class="team-sub">Away &bull; Form: Active</span>
@@ -111,8 +111,8 @@
                 <div class="compact-match-card" id="match-{{ match.id }}">
                     <div class="compact-card-header">
                         <div class="compact-crests-pair">
-                            {{ match.home_team|team_badge }}
-                            {{ match.away_team|team_badge }}
+                            {% club_crest match.home_team match.home_team_logo_url %}
+                            {% club_crest match.away_team match.away_team_logo_url %}
                         </div>
                         <div class="compact-match-info">
                             <h3 class="compact-title">{{ match.home_team }} vs {{ match.away_team }}</h3>
@@ -147,12 +147,12 @@
             {% endif %}
         </section>
 
-        <!-- SOCIAL PROOF / STATS ROW -->
+        <!-- DYNAMIC SOCIAL PROOF / STATS ROW -->
         <section class="social-proof-strip">
             <div class="proof-card">
                 <span class="proof-icon">🎯</span>
                 <div class="proof-details">
-                    <strong class="proof-number">85%</strong>
+                    <strong class="proof-number">{{ win_rate }}%</strong>
                     <span class="proof-label">Win Rate</span>
                     <small class="proof-sub">Last 30 Days</small>
                 </div>
@@ -160,7 +160,7 @@
             <div class="proof-card">
                 <span class="proof-icon">📊</span>
                 <div class="proof-details">
-                    <strong class="proof-number">210+</strong>
+                    <strong class="proof-number">{{ total_predictions }}</strong>
                     <span class="proof-label">Predictions</span>
                     <small class="proof-sub">This Month</small>
                 </div>
@@ -168,7 +168,7 @@
             <div class="proof-card">
                 <span class="proof-icon">👥</span>
                 <div class="proof-details">
-                    <strong class="proof-number">1.2K</strong>
+                    <strong class="proof-number">{{ active_users }}</strong>
                     <span class="proof-label">Active Users</span>
                     <small class="proof-sub">Using Free Tips</small>
                 </div>
@@ -183,60 +183,42 @@
         <!-- Live Matches Status Pill -->
         <div class="live-status-card">
             <span class="live-dot-pulse"></span>
-            <span class="live-status-text">Live &bull; {{ total_matches_count|default:"12" }} Matches Available</span>
+            <span class="live-status-text">Live &bull; {{ total_matches_count }} Matches Available</span>
         </div>
 
-        <!-- VIP MEMBERSHIP SHOWCASE CARD -->
+        <!-- VIP MEMBERSHIP SHOWCASE CARD (Fully Admin Controllable) -->
         <div class="vip-membership-card">
             <div class="vip-card-header">
                 <div class="vip-badge-pill">
                     <span class="crown-icon">👑</span>
-                    <span>VIP MEMBERSHIP</span>
+                    <span>{{ site_settings.vip_headline }}</span>
                 </div>
-                <h2 class="vip-headline">VIP MEMBERSHIP</h2>
-                <p class="vip-subline">Unlock premium predictions & exclusive insights</p>
+                <h2 class="vip-headline">{{ site_settings.vip_headline }}</h2>
+                <p class="vip-subline">{{ site_settings.vip_subline }}</p>
             </div>
 
             <!-- Price Display -->
             <div class="vip-pricing">
-                <span class="currency-symbol">$</span>
-                <span class="price-amount">15</span>
-                <span class="price-cycle">/month</span>
+                <span class="currency-symbol">{{ site_settings.vip_currency }}</span>
+                <span class="price-amount">{{ site_settings.vip_price|floatformat:0 }}</span>
+                <span class="price-cycle">{{ site_settings.vip_period }}</span>
             </div>
 
-            <!-- Perks Checklist -->
+            <!-- Perks Checklist (Dynamic from admin) -->
             <ul class="vip-features-list">
+                {% for perk in site_settings.vip_features_list %}
                 <li class="feature-item">
                     <span class="check-circle">&#10003;</span>
-                    <span>Daily 3-5 Safe Odds</span>
+                    <span>{{ perk }}</span>
                 </li>
-                <li class="feature-item">
-                    <span class="check-circle">&#10003;</span>
-                    <span>90% Accuracy</span>
-                </li>
-                <li class="feature-item">
-                    <span class="check-circle">&#10003;</span>
-                    <span>WhatsApp Support</span>
-                </li>
-                <li class="feature-item">
-                    <span class="check-circle">&#10003;</span>
-                    <span>Banker of the Day</span>
-                </li>
-                <li class="feature-item">
-                    <span class="check-circle">&#10003;</span>
-                    <span>Early Tips Access</span>
-                </li>
-                <li class="feature-item">
-                    <span class="check-circle">&#10003;</span>
-                    <span>Exclusive Analysis</span>
-                </li>
+                {% endfor %}
             </ul>
 
             <!-- Call to Action -->
             <div class="vip-cta-block">
-                <a href="{{ sportybet_url }}" target="_blank" rel="noopener" class="btn-vip-join">
+                <a href="{{ vip_action_url }}" target="_blank" rel="noopener" class="btn-vip-join">
                     <span class="lock-icon">🔒</span>
-                    <span>Join VIP Now — $15/month</span>
+                    <span>Join VIP Now — {{ site_settings.vip_currency }}{{ site_settings.vip_price|floatformat:0 }}{{ site_settings.vip_period }}</span>
                     <span class="arrow-icon">&rarr;</span>
                 </a>
                 <p class="vip-guarantee">Cancel anytime &bull; 3-day money-back guarantee</p>
@@ -245,7 +227,7 @@
             <!-- Members Count Proof -->
             <div class="vip-members-pill">
                 <span class="member-icon">👤</span>
-                <span>Join 1,500+ VIP Members</span>
+                <span>Join {{ site_settings.vip_member_count }}+ VIP Members</span>
             </div>
         </div>
 

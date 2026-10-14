@@ -3,9 +3,8 @@ Custom template filters for the matches app.
 
 Quick explanation for learning Django:
 - Template filters let you transform data right inside your HTML templates.
-- We use these to convert UTC times to WAT (West Africa Time),
-  EST (Eastern Standard Time), and GMT for display.
-- Also provides helper functions for countdowns and team badges.
+- We use these to convert UTC times to WAT, EST, and GMT for display.
+- Also provides helper functions for official club logos and countdowns.
 """
 
 from datetime import datetime, timezone as dt_timezone
@@ -16,6 +15,38 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 
 register = template.Library()
+
+# CDN URLs for official club crests (transparent PNGs from verified football data CDNs)
+OFFICIAL_CLUB_LOGOS = {
+    'arsenal': 'https://media.api-sports.io/football/teams/42.png',
+    'chelsea': 'https://media.api-sports.io/football/teams/49.png',
+    'liverpool': 'https://media.api-sports.io/football/teams/40.png',
+    'manchester city': 'https://media.api-sports.io/football/teams/50.png',
+    'man city': 'https://media.api-sports.io/football/teams/50.png',
+    'manchester united': 'https://media.api-sports.io/football/teams/33.png',
+    'man utd': 'https://media.api-sports.io/football/teams/33.png',
+    'tottenham': 'https://media.api-sports.io/football/teams/47.png',
+    'spurs': 'https://media.api-sports.io/football/teams/47.png',
+    'aston villa': 'https://media.api-sports.io/football/teams/66.png',
+    'newcastle': 'https://media.api-sports.io/football/teams/34.png',
+    'barcelona': 'https://media.api-sports.io/football/teams/529.png',
+    'real madrid': 'https://media.api-sports.io/football/teams/541.png',
+    'atletico madrid': 'https://media.api-sports.io/football/teams/530.png',
+    'bayern munich': 'https://media.api-sports.io/football/teams/157.png',
+    'bayern': 'https://media.api-sports.io/football/teams/157.png',
+    'dortmund': 'https://media.api-sports.io/football/teams/165.png',
+    'borussia dortmund': 'https://media.api-sports.io/football/teams/165.png',
+    'bayer leverkusen': 'https://media.api-sports.io/football/teams/168.png',
+    'leverkusen': 'https://media.api-sports.io/football/teams/168.png',
+    'paris saint-germain': 'https://media.api-sports.io/football/teams/85.png',
+    'psg': 'https://media.api-sports.io/football/teams/85.png',
+    'juventus': 'https://media.api-sports.io/football/teams/496.png',
+    'inter milan': 'https://media.api-sports.io/football/teams/505.png',
+    'inter': 'https://media.api-sports.io/football/teams/505.png',
+    'ac milan': 'https://media.api-sports.io/football/teams/489.png',
+    'milan': 'https://media.api-sports.io/football/teams/489.png',
+    'napoli': 'https://media.api-sports.io/football/teams/492.png',
+}
 
 
 @register.filter
@@ -63,54 +94,45 @@ def countdown(value):
     return f'Live in {minutes}m'
 
 
+@register.simple_tag
+def club_crest(team_name, custom_url=None):
+    """
+    Renders the official club logo:
+    1. If custom_url was entered by the admin, use it.
+    2. Else if team is in OFFICIAL_CLUB_LOGOS, use verified transparent PNG.
+    3. Else fallback to clean SVG shield.
+    """
+    name_clean = (team_name or '').strip().lower()
+    img_url = custom_url or OFFICIAL_CLUB_LOGOS.get(name_clean)
+
+    if img_url:
+        return mark_safe(f'''
+            <div class="crest-img-wrapper">
+                <img src="{img_url}" alt="{team_name}" class="team-crest-img" loading="lazy"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="crest-fallback" style="display:none;">
+                    {_render_svg_shield(team_name)}
+                </div>
+            </div>
+        ''')
+
+    return mark_safe(_render_svg_shield(team_name))
+
+
 @register.filter
 def team_badge(team_name):
-    """
-    Renders a stylized SVG crest with realistic colors and branding
-    for popular football clubs, or a sleek fallback shield.
-    """
-    name = (team_name or '').strip().lower()
+    """Convenience filter for templates without a custom url."""
+    return club_crest(team_name)
 
-    # Pre-defined club crest colors & glyphs
-    clubs = {
-        'arsenal': {'bg': '#DB0007', 'border': '#9C824A', 'initials': 'AFC', 'icon': 'cannon'},
-        'chelsea': {'bg': '#034694', 'border': '#DBA111', 'initials': 'CFC', 'icon': 'lion'},
-        'barcelona': {'bg': '#A50044', 'border': '#004D98', 'initials': 'FCB', 'icon': 'stripes'},
-        'real madrid': {'bg': '#FFFFFF', 'border': '#FEBE10', 'initials': 'RMCF', 'icon': 'crown', 'text': '#00529F'},
-        'bayern munich': {'bg': '#DC052D', 'border': '#0066B2', 'initials': 'FCB', 'icon': 'diamonds'},
-        'bayern': {'bg': '#DC052D', 'border': '#0066B2', 'initials': 'FCB', 'icon': 'diamonds'},
-        'dortmund': {'bg': '#FDE100', 'border': '#000000', 'initials': 'BVB', 'icon': 'bvb', 'text': '#000'},
-        'liverpool': {'bg': '#C8102E', 'border': '#00B2A9', 'initials': 'LFC', 'icon': 'bird'},
-        'manchester city': {'bg': '#6CABDD', 'border': '#1C2C5B', 'initials': 'MCFC', 'icon': 'ship'},
-        'man city': {'bg': '#6CABDD', 'border': '#1C2C5B', 'initials': 'MCFC', 'icon': 'ship'},
-        'manchester united': {'bg': '#DA291C', 'border': '#FBE122', 'initials': 'MUFC', 'icon': 'devil'},
-        'man utd': {'bg': '#DA291C', 'border': '#FBE122', 'initials': 'MUFC', 'icon': 'devil'},
-    }
 
-    info = clubs.get(name, {
-        'bg': '#1e293b',
-        'border': '#22c55e',
-        'initials': ''.join([w[0] for w in team_name.split()[:2]]).upper() or 'FC',
-        'text': '#ffffff'
-    })
-
-    text_color = info.get('text', '#ffffff')
-    initials = info.get('initials', 'FC')
-
-    svg = f'''
+def _render_svg_shield(team_name):
+    """Fallback stylized SVG shield with initials."""
+    initials = ''.join([w[0] for w in (team_name or 'FC').split()[:2]]).upper() or 'FC'
+    return f'''
     <svg class="team-crest-svg" viewBox="0 0 48 48" width="46" height="46" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-            <filter id="glow-{abs(hash(team_name)) % 1000}" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="{info['border']}" flood-opacity="0.35"/>
-            </filter>
-        </defs>
         <path d="M24 3L40 7V22C40 33 24 43 24 43C24 43 8 33 8 22V7L24 3Z"
-              fill="{info['bg']}" stroke="{info['border']}" stroke-width="2"
-              filter="url(#glow-{abs(hash(team_name)) % 1000})"/>
-        <path d="M24 6L37 9.5V21C37 30 24 38 24 38C24 38 11 30 11 21V9.5L24 6Z"
-              fill="rgba(255,255,255,0.06)"/>
+              fill="#101c2b" stroke="#22c55e" stroke-width="2"/>
         <text x="24" y="27" font-family="-apple-system, system-ui, sans-serif" font-size="11" font-weight="900"
-              fill="{text_color}" text-anchor="middle" letter-spacing="-0.5">{initials}</text>
+              fill="#ffffff" text-anchor="middle" letter-spacing="-0.5">{initials}</text>
     </svg>
     '''
-    return mark_safe(svg)

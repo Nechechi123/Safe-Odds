@@ -234,6 +234,16 @@ class SiteSettings(models.Model):
         return bool(self.vip_currency_2 and self.vip_price_2)
 
     @property
+    def vip_price_display(self):
+        """Primary price with thousands separators, e.g. 15 or 1,500."""
+        return f"{int(self.vip_price):,}"
+
+    @property
+    def vip_price_2_display(self):
+        """Second price with thousands separators, e.g. 20,000. Empty if unset."""
+        return f"{int(self.vip_price_2):,}" if self.vip_price_2 is not None else ''
+
+    @property
     def vip_whatsapp_url(self):
         """Constructs a direct WhatsApp chat link with the pre-filled message."""
         import urllib.parse

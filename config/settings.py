@@ -177,12 +177,18 @@ STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # WhiteNoise serves compressed, cache-busted static files in production.
+# In DEBUG (runserver) we use the plain storage so edited CSS/JS show up
+# immediately instead of resolving to stale hashed names in a manifest.
 STORAGES = {
     'default': {
         'BACKEND': 'django.core.files.storage.FileSystemStorage',
     },
     'staticfiles': {
-        'BACKEND': 'config.storage.CompressedManifestStaticFilesStorage',
+        'BACKEND': (
+            'django.contrib.staticfiles.storage.StaticFilesStorage'
+            if DEBUG
+            else 'config.storage.CompressedManifestStaticFilesStorage'
+        ),
     },
 }
 

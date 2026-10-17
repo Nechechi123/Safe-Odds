@@ -117,10 +117,21 @@ class SiteSettings(models.Model):
         default='Daily 3-5 Safe Odds\n90% Accuracy\nWhatsApp Support\nBanker of the Day\nEarly Tips Access\nExclusive Analysis',
         help_text='Enter one feature perk per line'
     )
+    whatsapp_number = models.CharField(
+        max_length=30,
+        blank=True,
+        default='',
+        help_text="Your WhatsApp phone number with country code (e.g. 2348012345678 or 15551234567, no + or spaces)"
+    )
+    whatsapp_vip_message = models.CharField(
+        max_length=255,
+        default="Hello SafeOdds! I want to join the VIP club for $15/month.",
+        help_text="Message pre-filled in WhatsApp when visitor clicks Join VIP"
+    )
     vip_payment_or_whatsapp_url = models.URLField(
         blank=True,
         default='',
-        help_text='Direct link for VIP purchase (WhatsApp link, Paystack, Flutterwave, or Stripe URL)'
+        help_text='Optional fallback URL if not using standard WhatsApp number'
     )
     vip_member_count = models.PositiveIntegerField(
         default=1500,
@@ -160,3 +171,17 @@ class SiteSettings(models.Model):
     @property
     def vip_features_list(self):
         return [line.strip() for line in self.vip_features.splitlines() if line.strip()]
+
+    @property
+    def vip_whatsapp_url(self):
+        """Constructs a direct WhatsApp chat link with the pre-filled message."""
+        import urllib.parse
+        clean_num = ''.join(filter(str.isdigit, self.whatsapp_number or ''))
+        # Generate message with current price if default
+        msg = self.whatsapp_vip_message or f"Hello {self.site_title}! I want to join the VIP club."
+        encoded_msg = urllib.parse.quote(msg)
+        if clean_num:
+            return f"https://wa.me/{clean_num}?text={encoded_msg}"
+        elif self.vip_payment_or_whatsapp_url:
+            return self.vip_payment_or_whatsapp_url
+        return f"https://wa.me/?text={encoded_msg}"

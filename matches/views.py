@@ -52,8 +52,8 @@ def home(request):
         total_in_db = Match.objects.count()
         total_predictions = f"{total_in_db}+" if total_in_db > 10 else "210+"
 
-    # VIP Action Link (WhatsApp, payment link, or SportyBet fallback)
-    vip_action_url = site_settings.vip_payment_or_whatsapp_url or getattr(settings, 'SPORTYBET_URL', 'https://www.sportybet.com')
+    # VIP Action Link (Direct WhatsApp Concierge)
+    vip_action_url = site_settings.vip_whatsapp_url
 
     context = {
         'matches': matches,

@@ -48,10 +48,12 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         ('Branding', {
             'fields': ('site_title', 'tagline')
         }),
-        ('VIP Membership Offer', {
+        ('VIP Membership Offer & WhatsApp Concierge', {
             'fields': (
                 'vip_headline', 'vip_subline',
                 ('vip_currency', 'vip_price', 'vip_period'),
+                'whatsapp_number',
+                'whatsapp_vip_message',
                 'vip_features',
                 'vip_payment_or_whatsapp_url',
                 'vip_member_count',

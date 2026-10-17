@@ -11,6 +11,22 @@ Quick explanation for learning Django:
 
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from django.db.models import Q
+from django.utils import timezone
+
+
+class MatchQuerySet(models.QuerySet):
+    """Helpers for the public visibility rules of a match."""
+
+    def visible(self, now=None):
+        """
+        Matches a visitor is allowed to see:
+        published, and either unscheduled or scheduled to publish by 'now'.
+        """
+        now = now or timezone.now()
+        return self.filter(is_published=True).filter(
+            Q(publish_at__isnull=True) | Q(publish_at__lte=now)
+        )
 
 
 class Match(models.Model):
@@ -70,7 +86,15 @@ class Match(models.Model):
         default=True,
         help_text='Uncheck to hide this match from the public page'
     )
+    publish_at = models.DateTimeField(
+        blank=True,
+        null=True,
+        help_text='Optional: hold this match back until this date/time. '
+                  'Leave blank to make it visible immediately.'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
+
+    objects = MatchQuerySet.as_manager()
 
     class Meta:
         ordering = ['kickoff']
@@ -78,6 +102,11 @@ class Match(models.Model):
 
     def __str__(self):
         return f'{self.home_team} vs {self.away_team}'
+
+    @property
+    def is_scheduled(self):
+        """True when the match is being held back for a future publish time."""
+        return bool(self.publish_at and self.publish_at > timezone.now())
 
     @property
     def label(self):

@@ -16,7 +16,7 @@ from .models import Match, SiteSettings
 class MatchAdmin(admin.ModelAdmin):
     list_display = (
         'kickoff', 'home_team', 'away_team', 'tip', 'odds',
-        'confidence', 'result', 'is_published',
+        'confidence', 'result', 'is_published', 'scheduled',
     )
     list_filter = ('league', 'result', 'is_published')
     search_fields = ('home_team', 'away_team', 'league')
@@ -36,9 +36,15 @@ class MatchAdmin(admin.ModelAdmin):
             'classes': ('collapse',),
         }),
         ('Status & Result', {
-            'fields': ('result', 'is_published')
+            'description': 'Uncheck "is published" to hide immediately. Or set "publish at" to schedule '
+                           'when this tip first appears on the public site.',
+            'fields': ('result', 'is_published', 'publish_at')
         }),
     )
+
+    @admin.display(description='Scheduled', boolean=True)
+    def scheduled(self, obj):
+        return obj.is_scheduled
 
 
 @admin.register(SiteSettings)

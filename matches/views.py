@@ -26,8 +26,7 @@ def home(request):
     now = timezone.now()
     site_settings = SiteSettings.load()
 
-    matches = list(Match.objects.filter(
-        is_published=True,
+    matches = list(Match.objects.visible(now).filter(
         kickoff__gte=now.replace(hour=0, minute=0, second=0, microsecond=0),
     ).order_by('kickoff'))
 
@@ -81,8 +80,7 @@ def results(request):
     """
     site_settings = SiteSettings.load()
 
-    settled = Match.objects.filter(
-        is_published=True,
+    settled = Match.objects.visible().filter(
         result__in=[Match.WON, Match.LOST, Match.VOID],
     ).order_by('-kickoff')
 

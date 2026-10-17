@@ -75,6 +75,41 @@ class MatchViewTest(TestCase):
         self.assertNotContains(response, "Barcelona vs Sevilla")
 
 
+class ScheduledPublishTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.now = timezone.now()
+
+    def _make(self, home, **kwargs):
+        defaults = dict(
+            league="Test League",
+            away_team="Away FC",
+            kickoff=self.now + timedelta(days=1),
+            tip="Home Win",
+            odds=Decimal("1.50"),
+            confidence=80,
+        )
+        defaults.update(kwargs)
+        return Match.objects.create(home_team=home, **defaults)
+
+    def test_future_scheduled_match_hidden(self):
+        self._make("FutureHold", publish_at=self.now + timedelta(hours=2))
+        response = self.client.get("/")
+        self.assertNotContains(response, "FutureHold vs Away FC")
+
+    def test_past_scheduled_match_visible(self):
+        self._make("PastRelease", publish_at=self.now - timedelta(hours=2))
+        response = self.client.get("/")
+        self.assertContains(response, "PastRelease vs Away FC")
+
+    def test_visible_queryset_excludes_scheduled(self):
+        scheduled = self._make("SchedOne", publish_at=self.now + timedelta(hours=2))
+        live = self._make("LiveOne")
+        visible = Match.objects.visible()
+        self.assertIn(live, visible)
+        self.assertNotIn(scheduled, visible)
+
+
 class TimezoneFiltersTest(TestCase):
     def test_to_wat_and_to_est(self):
         # 2026-10-15 12:00:00 UTC

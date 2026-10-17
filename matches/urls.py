@@ -15,4 +15,5 @@ app_name = 'matches'
 urlpatterns = [
     path('', views.home, name='home'),
     path('results/', views.results, name='results'),
+    path('contact/', views.contact, name='contact'),
 ]

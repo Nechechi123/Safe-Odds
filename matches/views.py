@@ -108,3 +108,17 @@ def results(request):
         'recent_form': recent_form,
     }
     return render(request, 'matches/results.html', context)
+
+
+def contact(request):
+    """
+    Contact page — points visitors to the WhatsApp community.
+
+    The invite link and blurb are managed in Admin (SiteSettings), so the
+    community URL can be added later without any code changes.
+    """
+    site_settings = SiteSettings.load()
+    context = {
+        'site_settings': site_settings,
+    }
+    return render(request, 'matches/contact.html', context)

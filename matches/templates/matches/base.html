@@ -38,7 +38,7 @@
             <nav class="nav-pills" id="navPills">
                 <a href="/" class="nav-pill{% if request.path == '/' %} active{% endif %}">Home</a>
                 <a href="/results/" class="nav-pill{% if request.path == '/results/' %} active{% endif %}">Results</a>
-                <a href="#contact" class="nav-pill">Contact</a>
+                <a href="/contact/" class="nav-pill{% if request.path == '/contact/' %} active{% endif %}">Contact</a>
             </nav>
 
             <!-- Right Action Icons & Slip Trigger -->

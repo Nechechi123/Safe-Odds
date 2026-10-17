@@ -1,0 +1,40 @@
+{% extends "matches/base.html" %}
+
+{% block title %}Contact — {{ site_settings.site_title }}{% endblock %}
+
+{% block content %}
+<div class="contact-wrapper">
+
+    <!-- Page Header -->
+    <section class="hero-intro">
+        <div class="hero-badges-row">
+            <span class="pill-badge pill-green-dot">
+                <span class="live-pulse-dot"></span>
+                STAY CONNECTED
+            </span>
+        </div>
+        <h1 class="hero-title">Contact &amp; Community</h1>
+        <p class="hero-desc">The fastest way to reach us and catch every tip the moment it drops — join our WhatsApp community.</p>
+    </section>
+
+    <!-- WhatsApp Community Card -->
+    <section class="contact-card">
+        <div class="contact-icon">💬</div>
+        <h2 class="contact-title">WhatsApp Community</h2>
+        <p class="contact-note">{{ site_settings.whatsapp_community_note }}</p>
+
+        {% if site_settings.whatsapp_community_url %}
+        <a href="{{ site_settings.whatsapp_community_url }}" target="_blank" rel="noopener" class="btn-community">
+            <span>Join the Community</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+        </a>
+        {% else %}
+        <span class="btn-community btn-community-disabled" aria-disabled="true">Invite link coming soon</span>
+        {% endif %}
+    </section>
+
+</div>
+{% endblock %}

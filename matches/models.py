@@ -157,6 +157,18 @@ class SiteSettings(models.Model):
         default="Hello SafeOdds! I want to join the VIP club for $15/month.",
         help_text="Message pre-filled in WhatsApp when visitor clicks Join VIP"
     )
+
+    # Contact page — WhatsApp community
+    whatsapp_community_url = models.URLField(
+        blank=True,
+        default='',
+        help_text="Invite link for your WhatsApp community/group. Leave blank until you have it."
+    )
+    whatsapp_community_note = models.CharField(
+        max_length=255,
+        default='Join our free WhatsApp community for daily tips, match alerts and updates.',
+        help_text='Short description shown on the Contact page'
+    )
     vip_payment_or_whatsapp_url = models.URLField(
         blank=True,
         default='',

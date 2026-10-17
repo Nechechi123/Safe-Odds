@@ -69,6 +69,10 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             'description': 'Set custom numbers or leave empty to calculate automatically from match history.',
             'fields': ('win_rate_override', 'total_predictions_override', 'active_users_label')
         }),
+        ('Contact Page — WhatsApp Community', {
+            'description': 'Shown on the /contact/ page. Paste your community invite link when you have it.',
+            'fields': ('whatsapp_community_note', 'whatsapp_community_url')
+        }),
     )
 
     def has_add_permission(self, request):

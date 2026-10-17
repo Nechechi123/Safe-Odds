@@ -11,6 +11,7 @@ Quick explanation for learning Django:
 """
 
 import os
+import sys
 from pathlib import Path
 from dotenv import load_dotenv
 import dj_database_url
@@ -25,6 +26,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+
+# Safety net: Render sets the RENDER environment variable on its platform.
+# Never run in debug on Render, even if DEBUG was accidentally left as True.
+if os.environ.get('RENDER'):
+    DEBUG = False
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # In development a throwaway key is fine, but in production (DEBUG=False) the
@@ -130,6 +136,14 @@ if DATABASES['default'].get('ENGINE') == 'django.db.backends.postgresql':
     if str(DATABASES['default'].get('PORT')) == '6543':
         DATABASES['default'].setdefault('OPTIONS', {})
         DATABASES['default']['OPTIONS']['DISABLE_SERVER_SIDE_CURSORS'] = True
+
+# The test suite always runs on local SQLite so tests never touch the
+# production Postgres database configured in DATABASE_URL.
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 
 
 # Password validation

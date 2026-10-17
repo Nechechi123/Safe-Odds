@@ -865,6 +865,40 @@ body.safeodds-app {
     margin-left: 4px;
 }
 
+/* VIP currency toggle ($ / ₦) */
+.vip-currency-toggle {
+    display: inline-flex;
+    gap: 4px;
+    background-color: rgba(11, 19, 29, 0.75);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-full);
+    padding: 4px;
+    margin: 0 auto;
+    align-self: center;
+}
+
+.vip-currency-opt {
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 0.95rem;
+    padding: 6px 18px;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.vip-currency-opt:hover {
+    color: #ffffff;
+}
+
+.vip-currency-opt.is-active {
+    background-color: var(--accent-green);
+    color: var(--accent-green-dark);
+}
+
 /* VIP Features List */
 .vip-features-list {
     list-style: none;

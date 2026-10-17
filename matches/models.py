@@ -140,6 +140,21 @@ class SiteSettings(models.Model):
     )
     vip_currency = models.CharField(max_length=10, default='$', help_text='e.g. $, ₦, £, €')
     vip_period = models.CharField(max_length=20, default='/month')
+
+    # Optional second currency (e.g. Naira) — shows a $/₦ toggle on the card.
+    vip_currency_2 = models.CharField(
+        max_length=10,
+        blank=True,
+        default='₦',
+        help_text='Second currency symbol, e.g. ₦. Leave blank to hide the currency toggle.'
+    )
+    vip_price_2 = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text='Price in the second currency. Leave blank to hide the currency toggle.'
+    )
     vip_headline = models.CharField(max_length=150, default='VIP MEMBERSHIP')
     vip_subline = models.CharField(max_length=200, default='Unlock premium predictions & exclusive insights')
     vip_features = models.TextField(
@@ -212,6 +227,11 @@ class SiteSettings(models.Model):
     @property
     def vip_features_list(self):
         return [line.strip() for line in self.vip_features.splitlines() if line.strip()]
+
+    @property
+    def has_secondary_currency(self):
+        """True when a second currency/price is configured for the VIP toggle."""
+        return bool(self.vip_currency_2 and self.vip_price_2)
 
     @property
     def vip_whatsapp_url(self):

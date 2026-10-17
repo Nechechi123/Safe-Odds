@@ -143,6 +143,48 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // VIP currency toggle ($ / ₦)
+    const vipPricing = document.getElementById('vipPricing');
+    const vipToggle = document.getElementById('vipCurrencyToggle');
+    if (vipPricing && vipToggle) {
+        const symbolEl = document.getElementById('vipCurrencySymbol');
+        const amountEl = document.getElementById('vipPriceAmount');
+        const joinEl = document.getElementById('vipJoinPrice');
+        const period = vipPricing.getAttribute('data-period') || '';
+        const options = {
+            primary: {
+                symbol: vipPricing.getAttribute('data-primary-currency') || '',
+                price: vipPricing.getAttribute('data-primary-price') || ''
+            },
+            secondary: {
+                symbol: vipPricing.getAttribute('data-secondary-currency') || '',
+                price: vipPricing.getAttribute('data-secondary-price') || ''
+            }
+        };
+
+        const applyCurrency = (target) => {
+            const opt = options[target];
+            if (!opt) return;
+            if (symbolEl) symbolEl.textContent = opt.symbol;
+            if (amountEl) amountEl.textContent = opt.price;
+            if (joinEl) joinEl.textContent = `${opt.symbol}${opt.price}${period}`;
+            vipToggle.querySelectorAll('.vip-currency-opt').forEach((btn) => {
+                btn.classList.toggle('is-active', btn.getAttribute('data-target') === target);
+            });
+            try { localStorage.setItem('vipCurrency', target); } catch (e) { /* ignore */ }
+        };
+
+        vipToggle.addEventListener('click', (e) => {
+            const btn = e.target.closest('.vip-currency-opt');
+            if (btn) applyCurrency(btn.getAttribute('data-target'));
+        });
+
+        try {
+            const saved = localStorage.getItem('vipCurrency');
+            if (saved && options[saved]) applyCurrency(saved);
+        } catch (e) { /* ignore */ }
+    }
+
     // Basic XSS protection helper
     function escapeHtml(str) {
         const div = document.createElement('div');

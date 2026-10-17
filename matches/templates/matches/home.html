@@ -195,11 +195,23 @@
             </div>
 
             <!-- Price Display -->
-            <div class="vip-pricing">
-                <span class="currency-symbol">{{ site_settings.vip_currency }}</span>
-                <span class="price-amount">{{ site_settings.vip_price|floatformat:0 }}</span>
+            <div class="vip-pricing" id="vipPricing"
+                 data-period="{{ site_settings.vip_period }}"
+                 data-primary-currency="{{ site_settings.vip_currency }}"
+                 data-primary-price="{{ site_settings.vip_price|floatformat:0 }}"
+                 {% if site_settings.has_secondary_currency %}data-secondary-currency="{{ site_settings.vip_currency_2 }}" data-secondary-price="{{ site_settings.vip_price_2|floatformat:0 }}"{% endif %}>
+                <span class="currency-symbol" id="vipCurrencySymbol">{{ site_settings.vip_currency }}</span>
+                <span class="price-amount" id="vipPriceAmount">{{ site_settings.vip_price|floatformat:0 }}</span>
                 <span class="price-cycle">{{ site_settings.vip_period }}</span>
             </div>
+
+            <!-- Optional Currency Toggle ($ / ₦) -->
+            {% if site_settings.has_secondary_currency %}
+            <div class="vip-currency-toggle" id="vipCurrencyToggle">
+                <button type="button" class="vip-currency-opt is-active" data-target="primary">{{ site_settings.vip_currency }}</button>
+                <button type="button" class="vip-currency-opt" data-target="secondary">{{ site_settings.vip_currency_2 }}</button>
+            </div>
+            {% endif %}
 
             <!-- Perks Checklist (Dynamic from admin) -->
             <ul class="vip-features-list">
@@ -215,7 +227,7 @@
             <div class="vip-cta-block">
                 <a href="{{ vip_action_url }}" target="_blank" rel="noopener" class="btn-vip-join">
                     <span class="lock-icon">🔒</span>
-                    <span>Join VIP Now — {{ site_settings.vip_currency }}{{ site_settings.vip_price|floatformat:0 }}{{ site_settings.vip_period }}</span>
+                    <span>Join VIP Now — <span id="vipJoinPrice">{{ site_settings.vip_currency }}{{ site_settings.vip_price|floatformat:0 }}{{ site_settings.vip_period }}</span></span>
                     <span class="arrow-icon">&rarr;</span>
                 </a>
                 <p class="vip-guarantee">Cancel anytime &bull; 3-day money-back guarantee</p>

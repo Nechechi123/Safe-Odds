@@ -58,6 +58,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             'fields': (
                 'vip_headline', 'vip_subline',
                 ('vip_currency', 'vip_price', 'vip_period'),
+                ('vip_currency_2', 'vip_price_2'),
                 'whatsapp_number',
                 'whatsapp_vip_message',
                 'vip_features',

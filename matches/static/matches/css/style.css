@@ -1443,6 +1443,121 @@ body.safeodds-app {
 }
 
 /* ==========================================================================
+   STAFF ANALYTICS DASHBOARD
+   ========================================================================== */
+.analytics-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.analytics-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.analytics-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.analytics-card-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+.analytics-card-value {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--accent-green-bright);
+    line-height: 1.1;
+}
+
+.analytics-card small {
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+}
+
+.analytics-charts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.chart-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+}
+
+.chart-card-wide {
+    grid-column: 1 / -1;
+}
+
+.chart-title {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 10px;
+    letter-spacing: 0.3px;
+}
+
+.analytics-lists {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.analytics-list-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+}
+
+.analytics-list-card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.analytics-list-card li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.analytics-list-card li strong {
+    color: #ffffff;
+}
+
+.analytics-list-card li.empty {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+@media (max-width: 900px) {
+    .analytics-cards,
+    .analytics-charts,
+    .analytics-lists {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================================================
    FOOTER & RESPONSIBLE GAMBLING
    ========================================================================== */
 .app-footer {

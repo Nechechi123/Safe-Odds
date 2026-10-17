@@ -39,6 +39,9 @@
                 <a href="/" class="nav-pill{% if request.path == '/' %} active{% endif %}">Home</a>
                 <a href="/results/" class="nav-pill{% if request.path == '/results/' %} active{% endif %}">Results</a>
                 <a href="/contact/" class="nav-pill{% if request.path == '/contact/' %} active{% endif %}">Contact</a>
+                {% if user.is_staff %}
+                <a href="/staff/analytics/" class="nav-pill{% if request.path == '/staff/analytics/' %} active{% endif %}">Analytics</a>
+                {% endif %}
             </nav>
 
             <!-- Right Action Icons & Slip Trigger -->
@@ -93,7 +96,7 @@
                     </div>
                 </div>
 
-                <a id="slip-place-btn" href="{{ sportybet_url }}" target="_blank" rel="noopener" class="btn-slip-action">
+                <a id="slip-place-btn" href="/go/sportybet/" target="_blank" rel="noopener" class="btn-slip-action">
                     <span>Place Slip on SportyBet</span>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <line x1="5" y1="12" x2="19" y2="12"></line>

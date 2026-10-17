@@ -19,6 +19,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleSlipBtn = document.getElementById('toggleSlipBtn');
     const addButtons = document.querySelectorAll('.btn-add-slip');
 
+    // Fire-and-forget analytics beacon (no cookies, no personal data)
+    function trackClick(target, matchId) {
+        try {
+            if (!navigator.sendBeacon) return;
+            const data = new FormData();
+            data.append('target', target);
+            if (matchId) data.append('match_id', matchId);
+            navigator.sendBeacon('/api/track/', data);
+        } catch (e) { /* ignore */ }
+    }
+
     // Update slip calculations and DOM
     function renderSlip() {
         const count = slip.length;
@@ -106,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 confidence: btn.getAttribute('data-confidence')
             };
             toggleSlipItem(matchData);
+            trackClick('add_to_slip', matchData.id);
         });
     });
 

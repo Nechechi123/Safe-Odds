@@ -1,0 +1,128 @@
+{% extends "matches/base.html" %}
+
+{% block title %}Analytics — {{ site_settings.site_title }}{% endblock %}
+
+{% block content %}
+<div class="analytics-wrapper">
+
+    <section class="hero-intro">
+        <div class="hero-badges-row">
+            <span class="pill-badge pill-green-dot">
+                <span class="live-pulse-dot"></span>
+                STAFF ONLY
+            </span>
+            <span class="pill-badge pill-date">&bull; Last {{ days }} days</span>
+        </div>
+        <h1 class="hero-title">Site Analytics</h1>
+        <p class="hero-desc">Anonymous, first-party traffic. Bots excluded. No cookies, no personal data.</p>
+    </section>
+
+    <section class="analytics-cards">
+        <div class="analytics-card">
+            <span class="analytics-card-label">Page Views</span>
+            <strong class="analytics-card-value">{{ total_views }}</strong>
+            <small>Last {{ days }} days</small>
+        </div>
+        <div class="analytics-card">
+            <span class="analytics-card-label">Unique Visitors</span>
+            <strong class="analytics-card-value">{{ total_visitors }}</strong>
+            <small>Daily-salted hash</small>
+        </div>
+        <div class="analytics-card">
+            <span class="analytics-card-label">Tracked Clicks</span>
+            <strong class="analytics-card-value">{{ total_clicks }}</strong>
+            <small>Bets, VIP, WhatsApp, Slip</small>
+        </div>
+    </section>
+
+    <section class="analytics-charts">
+        <div class="chart-card chart-card-wide">
+            <h2 class="chart-title">Traffic — Views &amp; Visitors</h2>
+            <canvas id="trafficChart" height="120"></canvas>
+        </div>
+        <div class="chart-card">
+            <h2 class="chart-title">Clicks by Target</h2>
+            <canvas id="clicksChart" height="200"></canvas>
+        </div>
+        <div class="chart-card">
+            <h2 class="chart-title">Top Pages</h2>
+            <canvas id="pagesChart" height="200"></canvas>
+        </div>
+        <div class="chart-card">
+            <h2 class="chart-title">Devices</h2>
+            <canvas id="devicesChart" height="200"></canvas>
+        </div>
+    </section>
+
+    <section class="analytics-lists">
+        <div class="analytics-list-card">
+            <h2 class="chart-title">Top Pages</h2>
+            <ul>
+                {% for page in top_pages %}
+                <li><span>{{ page.path }}</span><strong>{{ page.count }}</strong></li>
+                {% empty %}
+                <li class="empty">No page views yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="analytics-list-card">
+            <h2 class="chart-title">Top Referrers</h2>
+            <ul>
+                {% for ref in referrers %}
+                <li><span>{{ ref.referrer_host }}</span><strong>{{ ref.count }}</strong></li>
+                {% empty %}
+                <li class="empty">No external referrers yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+
+</div>
+
+{{ chart_data|json_script:"analytics-data" }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+    var el = document.getElementById('analytics-data');
+    if (!el || typeof Chart === 'undefined') return;
+    var data = JSON.parse(el.textContent);
+
+    var green = '#22c55e', cyan = '#38bdf8', amber = '#f59e0b';
+    var palette = ['#22c55e', '#38bdf8', '#f59e0b', '#a78bfa', '#ef4444', '#14b8a6', '#e879f9', '#94a3b8'];
+
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.borderColor = 'rgba(148,163,184,0.15)';
+    Chart.defaults.font.family = 'Inter, sans-serif';
+
+    new Chart(document.getElementById('trafficChart'), {
+        type: 'line',
+        data: {
+            labels: data.labels,
+            datasets: [
+                { label: 'Views', data: data.views, borderColor: green, backgroundColor: 'rgba(34,197,94,0.15)', fill: true, tension: 0.3, pointRadius: 0 },
+                { label: 'Unique Visitors', data: data.visitors, borderColor: cyan, backgroundColor: 'rgba(56,189,248,0.10)', fill: true, tension: 0.3, pointRadius: 0 }
+            ]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+    });
+
+    new Chart(document.getElementById('clicksChart'), {
+        type: 'doughnut',
+        data: { labels: data.clicks.labels, datasets: [{ data: data.clicks.values, backgroundColor: palette, borderWidth: 0 }] },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    });
+
+    new Chart(document.getElementById('pagesChart'), {
+        type: 'bar',
+        data: { labels: data.pages.labels, datasets: [{ label: 'Views', data: data.pages.values, backgroundColor: green }] },
+        options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { precision: 0 } } } }
+    });
+
+    new Chart(document.getElementById('devicesChart'), {
+        type: 'doughnut',
+        data: { labels: data.devices.labels, datasets: [{ data: data.devices.values, backgroundColor: [green, cyan, amber, '#a78bfa'], borderWidth: 0 }] },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    });
+})();
+</script>
+{% endblock %}

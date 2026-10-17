@@ -1,0 +1,97 @@
+{% extends "matches/base.html" %}
+{% load match_extras %}
+
+{% block title %}Results — {{ site_settings.site_title }}{% endblock %}
+
+{% block content %}
+<div class="results-wrapper">
+
+    <!-- Page Header -->
+    <section class="hero-intro">
+        <div class="hero-badges-row">
+            <span class="pill-badge pill-green-dot">
+                <span class="live-pulse-dot"></span>
+                VERIFIED TRACK RECORD
+            </span>
+            <span class="pill-badge pill-date">
+                &bull; {{ settled_count }} Settled Tips
+            </span>
+        </div>
+        <h1 class="hero-title">Results &amp; Performance</h1>
+        <p class="hero-desc">Every published tip is graded WON, LOST, or VOID. No hiding losses — the full record is public.</p>
+    </section>
+
+    <!-- Performance Summary -->
+    <section class="social-proof-strip results-stats">
+        <div class="proof-card">
+            <span class="proof-icon">🎯</span>
+            <div class="proof-details">
+                <strong class="proof-number">{{ win_rate }}%</strong>
+                <span class="proof-label">Win Rate</span>
+                <small class="proof-sub">Excludes void tips</small>
+            </div>
+        </div>
+        <div class="proof-card">
+            <span class="proof-icon">✅</span>
+            <div class="proof-details">
+                <strong class="proof-number">{{ won_count }}</strong>
+                <span class="proof-label">Won</span>
+                <small class="proof-sub">Correct tips</small>
+            </div>
+        </div>
+        <div class="proof-card">
+            <span class="proof-icon">❌</span>
+            <div class="proof-details">
+                <strong class="proof-number">{{ lost_count }}</strong>
+                <span class="proof-label">Lost</span>
+                <small class="proof-sub">Missed tips</small>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Form Strip -->
+    {% if recent_form %}
+    <div class="recent-form-bar">
+        <span class="form-label">Recent form</span>
+        <div class="form-dots">
+            {% for outcome in recent_form %}
+            <span class="form-dot form-{{ outcome|lower }}">{{ outcome }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Results List -->
+    <section class="results-grid">
+        {% for match in results %}
+        <div class="result-card result-{{ match.result|lower }}">
+            <div class="result-card-top">
+                <div class="compact-crests-pair">
+                    {% club_crest match.home_team match.home_team_logo_url %}
+                    {% club_crest match.away_team match.away_team_logo_url %}
+                </div>
+                <div class="compact-match-info">
+                    <h3 class="compact-title">{{ match.home_team }} vs {{ match.away_team }}</h3>
+                    <span class="compact-meta">{{ match.league }} &bull; {{ match.kickoff|date:"M d, Y" }}</span>
+                </div>
+                <span class="result-badge result-badge-{{ match.result|lower }}">
+                    {% if match.result == 'WON' %}WON{% elif match.result == 'LOST' %}LOST{% else %}VOID{% endif %}
+                </span>
+            </div>
+            <div class="result-card-bottom">
+                <div class="compact-tip-group">
+                    <span class="compact-tip-label">{{ match.tip }}</span>
+                    <span class="compact-confidence badge-mini-{{ match.label|lower }}">{{ match.confidence }}% {{ match.label }}</span>
+                </div>
+                <span class="compact-odds-val">{{ match.odds }}</span>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-matches-notice">
+            <p>No results published yet. Once the admin grades tips as WON, LOST, or VOID, they'll appear here.</p>
+        </div>
+        {% endfor %}
+    </section>
+
+</div>
+{% endblock %}

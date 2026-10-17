@@ -114,7 +114,7 @@ class SiteSettings(models.Model):
     vip_headline = models.CharField(max_length=150, default='VIP MEMBERSHIP')
     vip_subline = models.CharField(max_length=200, default='Unlock premium predictions & exclusive insights')
     vip_features = models.TextField(
-        default='Daily 3-5 Safe Odds\n90% Accuracy\nWhatsApp Support\nBanker of the Day\nEarly Tips Access\nExclusive Analysis',
+        default='Daily 3-5 Safe Odds\n90% Accuracy\nWhatsApp Support\nBanker of the Day\nEarly Tips Access',
         help_text='Enter one feature perk per line'
     )
     whatsapp_number = models.CharField(

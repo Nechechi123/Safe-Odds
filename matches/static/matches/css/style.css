@@ -1233,6 +1233,148 @@ body.safeodds-app {
 }
 
 /* ==========================================================================
+   PUBLIC RESULTS PAGE
+   ========================================================================== */
+.results-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Recent Form Strip */
+.recent-form-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 18px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-md);
+}
+
+.form-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.form-dots {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.form-w {
+    background-color: rgba(34, 197, 94, 0.15);
+    border: 1.5px solid var(--accent-green);
+    color: var(--accent-green-bright);
+}
+
+.form-l {
+    background-color: rgba(239, 68, 68, 0.15);
+    border: 1.5px solid var(--risky-red);
+    color: var(--risky-red);
+}
+
+/* Results Grid */
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+}
+
+.result-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-left: 4px solid var(--border-card);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.result-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.result-card.result-won {
+    border-left-color: var(--safe-green);
+}
+
+.result-card.result-lost {
+    border-left-color: var(--risky-red);
+}
+
+.result-card.result-void {
+    border-left-color: var(--text-dim);
+}
+
+.result-card-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.result-card-top .compact-match-info {
+    flex: 1;
+    min-width: 120px;
+}
+
+.result-card-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-top: 1px solid rgba(28, 43, 61, 0.6);
+}
+
+/* Result Badge */
+.result-badge {
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.result-badge-won {
+    background-color: rgba(34, 197, 94, 0.15);
+    border: 1px solid var(--safe-green);
+    color: var(--safe-green);
+}
+
+.result-badge-lost {
+    background-color: rgba(239, 68, 68, 0.15);
+    border: 1px solid var(--risky-red);
+    color: var(--risky-red);
+}
+
+.result-badge-void {
+    background-color: rgba(100, 116, 139, 0.15);
+    border: 1px solid var(--text-muted);
+    color: var(--text-secondary);
+}
+
+/* ==========================================================================
    FOOTER & RESPONSIBLE GAMBLING
    ========================================================================== */
 .app-footer {

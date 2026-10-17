@@ -69,3 +69,44 @@ def home(request):
         'sportybet_url': getattr(settings, 'SPORTYBET_URL', 'https://www.sportybet.com'),
     }
     return render(request, 'matches/home.html', context)
+
+
+def results(request):
+    """
+    Public results page — the site's track record.
+
+    Shows every published match the owner has graded (WON / LOST / VOID),
+    newest first, plus an overall record summary. VOID tips are counted in
+    the list but excluded from the win-rate calculation.
+    """
+    site_settings = SiteSettings.load()
+
+    settled = Match.objects.filter(
+        is_published=True,
+        result__in=[Match.WON, Match.LOST, Match.VOID],
+    ).order_by('-kickoff')
+
+    won_count = settled.filter(result=Match.WON).count()
+    lost_count = settled.filter(result=Match.LOST).count()
+    void_count = settled.filter(result=Match.VOID).count()
+
+    decided = won_count + lost_count
+    win_rate = round((won_count / decided) * 100) if decided else 0
+
+    # Last 5 decided outcomes, newest first, for the "recent form" strip.
+    recent_form = [
+        'W' if match.result == Match.WON else 'L'
+        for match in settled.exclude(result=Match.VOID)[:5]
+    ]
+
+    context = {
+        'site_settings': site_settings,
+        'results': settled[:60],
+        'won_count': won_count,
+        'lost_count': lost_count,
+        'void_count': void_count,
+        'settled_count': won_count + lost_count + void_count,
+        'win_rate': win_rate,
+        'recent_form': recent_form,
+    }
+    return render(request, 'matches/results.html', context)

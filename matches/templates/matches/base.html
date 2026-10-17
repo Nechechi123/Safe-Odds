@@ -36,10 +36,8 @@
 
             <!-- Navigation Pills -->
             <nav class="nav-pills" id="navPills">
-                <a href="/" class="nav-pill active">Home</a>
-                <a href="#free-tips" class="nav-pill">Free Tips</a>
-                <a href="#vip-section" class="nav-pill">VIP</a>
-                <a href="/admin/" class="nav-pill">Results</a>
+                <a href="/" class="nav-pill{% if request.path == '/' %} active{% endif %}">Home</a>
+                <a href="/results/" class="nav-pill{% if request.path == '/results/' %} active{% endif %}">Results</a>
                 <a href="#contact" class="nav-pill">Contact</a>
             </nav>
 

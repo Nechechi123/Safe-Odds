@@ -91,10 +91,11 @@
                     data-tip="{{ featured_match.tip }}"
                     data-odds="{{ featured_match.odds }}"
                     data-confidence="{{ featured_match.confidence }}"
+                    data-sb-ids="{{ featured_match.sportybet_ids_string }}"
                 >
                     + Add to Slip
                 </button>
-                <a href="/go/sportybet/" target="_blank" rel="noopener" class="btn-sportybet-direct">
+                <a href="{% if featured_match.sportybet_ids_string %}/go/sportybet/?ids={{ featured_match.sportybet_ids_string }}{% else %}/go/sportybet/{% endif %}" target="_blank" rel="noopener" class="btn-sportybet-direct">
                     BET on SportyBet
                 </a>
             </div>
@@ -130,6 +131,7 @@
                                 data-tip="{{ match.tip }}"
                                 data-odds="{{ match.odds }}"
                                 data-confidence="{{ match.confidence }}"
+                                data-sb-ids="{{ match.sportybet_ids_string }}"
                             >
                                 + Slip
                             </button>

@@ -28,7 +28,7 @@ class MatchAdmin(admin.ModelAdmin):
             'fields': ('league', 'home_team', 'away_team', 'kickoff')
         }),
         ('Prediction & Odds', {
-            'fields': ('tip', 'odds', 'confidence')
+            'fields': ('tip', 'odds', 'confidence', 'sportybet_pick_ids')
         }),
         ('Club Logos (Optional)', {
             'description': 'Leave blank to use the official club logo automatically, or paste direct image URLs.',

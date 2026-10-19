@@ -30,6 +30,16 @@ class TrackingTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(ClickEvent.objects.filter(target='sportybet').exists())
 
+    def test_go_sportybet_forwards_valid_ids(self):
+        response = self.client.get('/go/sportybet/', {'ids': '1.27166,1.27167'})
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response['Location'].endswith('ids=1.27166%2C1.27167'))
+
+    def test_go_sportybet_rejects_invalid_ids(self):
+        response = self.client.get('/go/sportybet/', {'ids': 'evil<script>'})
+        self.assertEqual(response.status_code, 302)
+        self.assertNotIn('evil', response['Location'])
+
     def test_beacon_logs_click(self):
         response = self.client.post('/api/track/', {'target': 'add_to_slip', 'match_id': '5'})
         self.assertEqual(response.status_code, 200)

@@ -91,6 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.textContent = btn.classList.contains('btn-compact-add') ? '+ Slip' : '+ Add to Slip';
             }
         });
+
+        updatePlaceButton();
     }
 
     // Toggle match in/out of slip
@@ -114,12 +116,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 match: btn.getAttribute('data-match'),
                 tip: btn.getAttribute('data-tip'),
                 odds: btn.getAttribute('data-odds'),
-                confidence: btn.getAttribute('data-confidence')
+                confidence: btn.getAttribute('data-confidence'),
+                sbIds: btn.getAttribute('data-sb-ids') || ''
             };
             toggleSlipItem(matchData);
             trackClick('add_to_slip', matchData.id);
         });
     });
+
+    // Rebuild the "Place Slip" link so SportyBet receives the current picks
+    function updatePlaceButton() {
+        const placeBtn = document.getElementById('slip-place-btn');
+        if (!placeBtn) return;
+        const ids = [];
+        slip.forEach(item => {
+            (item.sbIds || '').split(',').forEach(raw => {
+                const pick = raw.trim();
+                if (pick && ids.indexOf(pick) === -1) ids.push(pick);
+            });
+        });
+        placeBtn.setAttribute('href', ids.length ? `/go/sportybet/?ids=${ids.join(',')}` : '/go/sportybet/');
+    }
 
     // Remove single item from slip list
     if (slipList) {

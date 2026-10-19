@@ -1,9 +1,6 @@
-"""
-Analytics views: click tracking via a redirect endpoint and a JS beacon.
-"""
-
+import re
 from datetime import timedelta
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunsplit, parse_qsl, urlencode
 
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
@@ -17,6 +14,9 @@ from django.views.decorators.http import require_POST
 
 from . import utils
 from .models import ClickEvent, PageView
+
+# Allowed inside a SportyBet pick id: digits, event separators and commas.
+PICK_IDS_RE = re.compile(r'^[0-9]+(\.[0-9]+)?(,[0-9]+(\.[0-9]+)?)*$')
 
 
 def _log_click(request, target, match_id=None):
@@ -32,6 +32,14 @@ def _log_click(request, target, match_id=None):
         browser=browser,
         is_bot=is_bot,
     )
+
+
+def _with_ids(base_url, ids):
+    """Append ?ids=... to a destination URL, preserving existing params."""
+    parsed = urlparse(base_url)
+    params = parse_qsl(parsed.query, keep_blank_values=True)
+    params.append(('ids', ids))
+    return urlunsplit((parsed.scheme, parsed.netloc, parsed.path, urlencode(params), parsed.fragment))
 
 
 def _destination(slug):
@@ -50,6 +58,11 @@ def _destination(slug):
 def go(request, slug):
     """Log a click, then redirect the visitor to the destination."""
     destination = _destination(slug)
+
+    ids = (request.GET.get('ids') or '').replace(' ', '')
+    if slug == 'sportybet' and ids and PICK_IDS_RE.match(ids):
+        destination = _with_ids(destination, ids)
+
     _log_click(request, slug)
     if not destination:
         return redirect('matches:contact')

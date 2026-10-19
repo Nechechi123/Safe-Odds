@@ -73,6 +73,14 @@ class Match(models.Model):
         validators=[MinValueValidator(1.01)],
         help_text='Decimal odds, e.g. 1.35'
     )
+    sportybet_pick_ids = models.CharField(
+        max_length=255,
+        blank=True,
+        default='',
+        help_text='Optional. Comma-separated SportyBet pick IDs for this tip (e.g. 1.27166). '
+                  'Lets the Place Slip button auto-fill the betslip on SportyBet. '
+                  'Leave blank to just open SportyBet normally.'
+    )
     confidence = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         help_text='0 to 100 — the site owner\'s confidence in this tip'
@@ -107,6 +115,18 @@ class Match(models.Model):
     def is_scheduled(self):
         """True when the match is being held back for a future publish time."""
         return bool(self.publish_at and self.publish_at > timezone.now())
+
+    @property
+    def sportybet_ids_clean(self):
+        """Whitespace-stripped, list or [] — SportyBet pick IDs for deep links."""
+        if not self.sportybet_pick_ids:
+            return []
+        return [p.strip() for p in self.sportybet_pick_ids.split(',') if p.strip()]
+
+    @property
+    def sportybet_ids_string(self):
+        """Comma-joined pick IDs, ready for a SportyBet deep link ('' if none)."""
+        return ','.join(self.sportybet_ids_clean)
 
     @property
     def label(self):
